@@ -115,8 +115,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                // Send fetch POST request to backend API
-                const response = await fetch('http://localhost:5000/api/submit-demo', {
+                // Send fetch POST request to backend API using relative path (works everywhere)
+                const response = await fetch('/api/submit-demo', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
