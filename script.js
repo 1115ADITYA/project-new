@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('demo-modal');
     const openBtns = document.querySelectorAll('.open-demo-btn');
     const closeBtn = document.getElementById('close-modal');
-    const demoForm = document.getElementById('demo-form');
+    const demoForm = document.getElementById('demoForm'); // Updated to use the correct ID
     const successMessage = document.getElementById('success-message');
     const closeSuccessBtn = document.getElementById('close-success');
 
@@ -87,37 +87,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Form Submission Simulation
+    // Form Submission Logic communicating with Express Backend
     if (demoForm) {
-        demoForm.addEventListener('submit', (e) => {
+        demoForm.addEventListener('submit', async (e) => {
+            // Prevent default form submit
             e.preventDefault();
             
-            // Collect form data
+            // Collect all form values using provided IDs
             const formData = {
-                name: document.getElementById('name').value,
-                company: document.getElementById('company').value,
-                businessType: document.getElementById('business-type').value,
+                fullName: document.getElementById('fullName').value,
+                companyName: document.getElementById('companyName').value,
+                businessType: document.getElementById('businessType').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
                 service: document.getElementById('service').value,
                 message: document.getElementById('message').value
             };
 
-            console.log('Form Submitted Data:', formData);
+            console.log('Sending Form Data:', formData);
 
             // Change UI to loading state
             const submitBtn = demoForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
-            submitBtn.disabled = true;
+            const originalText = submitBtn ? submitBtn.innerHTML : 'Submit';
+            if (submitBtn) {
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+                submitBtn.disabled = true;
+            }
 
-            // Simulate API call delay
-            setTimeout(() => {
-                demoForm.style.display = 'none';
-                successMessage.style.display = 'block';
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            }, 1500);
+            try {
+                // Send fetch POST request to backend API
+                const response = await fetch('http://localhost:5000/api/submit-demo', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    demoForm.style.display = 'none';
+                    if (successMessage) successMessage.style.display = 'block';
+                    console.log('Success:', data.message);
+                } else {
+                    // Show error message
+                    alert('Error: ' + data.message);
+                    console.error('Server Error:', data.message);
+                }
+            } catch (error) {
+                // Handle network or other fetch errors
+                alert('An error occurred while submitting the request.');
+                console.error('Fetch Error:', error);
+            } finally {
+                // Restore button state
+                if (submitBtn) {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }
+            }
         });
     }
 
