@@ -1,8 +1,8 @@
 const { Pool } = require('pg');
 const dotenv = require('dotenv');
 
-// Load environment variables
-dotenv.config();
+const path = require('path');
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 // Create a new PostgreSQL connection pool
 // Using a pool is better than a single client as it manages multiple concurrent connections efficiently
