@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const app = express();
-const demoRoutes = require('./routes/demoRoutes');
+const demoRoutes = require('../backend/routes/demoRoutes');
 
 app.use(cors());
 app.use(express.json());
